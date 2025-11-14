@@ -17,13 +17,13 @@
 
 在您的 Cloudflare Worker 设置中，必须配置以下环境变量：
 
-| 变量名 | 描述 | 示例值 | 备注 |
-| :--- | :--- | :--- | :--- |
-| `TOKEN` | **Worker 服务认证密钥**。用户必须在查询参数中提供此值。 | `my-worker-secret-12345` | **必填** |
-| `GH_TOKEN` | **GitHub 个人访问令牌 (PAT)**。用于访问私有仓库。 | `ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx` | **必填**，需要 `repo` 或 `contents:read` 权限。 |
-| `GH_NAME` | **默认用户名/组织名**。用于自动拼接相对路径。 | `assast` | **必填** (用于相对路径模式) |
-| `ERROR` | (可选) 自定义错误提示信息。 | `Custom Error Message` | |
-| `URL` / `URL302` | (可选) 首页重定向或代理地址。 | `https://example.com` | |
+| 变量名 | 描述 | 示例值 | 备注                                              |
+| :--- | :--- | :--- |:------------------------------------------------|
+| `TOKEN` | **Worker 服务认证密钥**。用户必须在查询参数中提供此值。 | `my-worker-secret-12345` | **必填**                                          |
+| `GH_TOKEN` | **GitHub 个人访问令牌 (PAT)**。用于访问私有仓库。 | `ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx` | **必填**，需要 `repo` 或 `contents:read` 权限。获取方法见下方【获取 GitHub 访问令牌 (Personal Access Token, PAT) 的步骤】 |
+| `GH_NAME` | **默认用户名/组织名**。用于自动拼接相对路径。 | `assast` | **必填** (用于相对路径模式)                               |
+| `ERROR` | (可选) 自定义错误提示信息。 | `Custom Error Message` |                                                 |
+| `URL` / `URL302` | (可选) 首页重定向或代理地址。 | `https://example.com` |                                                 |
 
 ## 💡 使用方法
 
@@ -58,3 +58,53 @@
 
 ### 添加自定义域名
 由于worker路径默认是被墙的，建议在worker的设置界面添加自定义域名，然后访问自定义域名即可（自定义域名的添加可能要一点时间才会生效，请耐心等待，这期间可以先直接使用worker的域名）
+
+### 📝 获取 GitHub 访问令牌 (Personal Access Token, PAT) 的步骤
+
+#### 步骤 1: 导航到设置
+
+1.  登录您的 **GitHub 账号**。
+2.  点击页面右上角的**用户头像**。
+3.  在下拉菜单中，选择 **Settings**（设置）。
+
+#### 步骤 2: 进入开发者设置
+
+1.  在左侧导航栏的底部，找到并点击 **Developer settings**（开发者设置）。
+2.  在左侧导航栏中，点击 **Personal access tokens**（个人访问令牌）。
+3.  您会看到两个选项：**Tokens (classic)** 和 **Fine-grained tokens**。
+
+#### 步骤 3: 选择令牌类型并生成
+
+**推荐（更安全）：Fine-grained tokens (细粒度令牌)**
+
+1.  点击 **Fine-grained tokens**。
+2.  点击 **Generate new token**（生成新令牌）。
+3.  **Token name**：为令牌起一个描述性的名字，例如 `Worker-PrivateRepo-Access`。
+4.  **Expiration**：设置令牌的过期时间（为了安全，不建议选择 "No expiration"）。
+5.  **Resource owner**：选择您自己的账号。
+6.  **Repository access**：
+    * 选择 **Only select repositories**（仅选择特定仓库）。
+    * 在下方的列表中选择您的私有仓库。
+7.  **Permissions**（权限）：
+    * 找到 **Repository permissions**（仓库权限）。
+    * 找到 **Contents**（内容），将权限设置为 **Read-only**（只读）。
+8.  点击底部的 **Generate token**（生成令牌）。
+
+**替代（经典，通常用于旧应用）：Tokens (classic)**
+
+1.  点击 **Tokens (classic)**。
+2.  点击 **Generate new token**（生成新令牌）。
+3.  **Note**：为令牌起一个描述性的名字。
+4.  **Expiration**：设置过期时间。
+5.  **Select scopes**（选择范围）：
+    * 要下载私有仓库的 ZIP 或 Raw 文件，您至少需要勾选 **`repo`** 权限（这会授予对所有私有仓库的访问权限）。
+
+#### 步骤 4: 复制令牌
+
+* **令牌生成后，GitHub 只会显示一次！**
+* 请立即复制生成的字符串，并将其妥善保管（例如，用于配置您的 Worker 环境变量 `GH_TOKEN`）。
+
+**重要提示：**
+
+* **不要将您的 PAT 直接暴露给任何人，包括 Worker 脚本的使用者。**（您的 Worker 脚本已经将 PAT 存储在环境变量中，是安全的做法。）
+* 始终为您需要的最小权限授予 PAT，并设置合理的过期时间。
