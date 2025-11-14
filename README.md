@@ -107,4 +107,5 @@
 * **不要将您的 PAT 直接暴露给任何人，包括 Worker 脚本的使用者。**（您的 Worker 脚本已经将 PAT 存储在环境变量中，是安全的做法。）
 * 始终为您需要的最小权限授予 PAT，并设置合理的过期时间。
 
-改自https://github.com/cmliu/CF-Workers-Raw，在原版的基础上加了git的文件下载支持，例如https://github.com/assast/git_and_row_worker/archive/refs/heads/main.zip这种，也阉割了一些能力 保留了必要能力
+改自https://github.com/cmliu/CF-Workers-Raw
+在原版的基础上加了git 私仓的文件下载支持，例如`https://github.com/assast/git_and_row_worker/archive/refs/heads/main.zip`这种，也阉割了一些能力 保留了必要能力
